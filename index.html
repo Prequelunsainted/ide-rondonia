@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IDE Rondônia · Dados de Rondônia no mapa</title>
+  <meta name="description" content="A Infraestrutura de Dados Espaciais da SEDEC reúne indicadores econômicos, sociais e ambientais dos 52 municípios de Rondônia em mapas e painéis abertos.">
+  <meta name="theme-color" content="#005b96">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="palco.css">
+  <link rel="stylesheet" href="dinamico.css">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="topo__barra envelope">
+      <a class="marca" href="#inicio" aria-label="IDE Rondônia, início">
+        <img src="assets/geode-logo.png" alt="" width="104" height="42">
+        <span class="marca__texto">
+          <strong>IDE Rondônia</strong>
+          <span>Infraestrutura de Dados Espaciais</span>
+        </span>
+      </a>
+      <nav class="topo__nav" aria-label="Seções da página">
+        <a href="#temas">Temas</a>
+        <a href="#explorar">Explorar</a>
+        <a href="#como-usar">Como usar</a>
+        <a href="#fontes">Fontes</a>
+        <a href="#sobre">Quem faz</a>
+      </nav>
+      <a class="botao botao--primario botao--compacto" href="https://geo.sedec.ro.gov.br/" target="_blank" rel="noopener">
+        Abrir a IDE
+        <svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <!-- ABERTURA: palco 3D -->
+    <section class="palco" id="inicio" aria-labelledby="titulo">
+      <div class="palco__fixo">
+        <canvas id="palco-canvas" class="palco__canvas" aria-hidden="true"></canvas>
+
+        <div class="palco__reserva">
+          <video id="video-mapa" muted loop playsinline preload="none"
+            poster="assets/ide-mapa-poster.jpg"
+            aria-label="Animação: mapa de Rondônia sobre imagem de satélite, com os 52 municípios coloridos por população, depois PIB e depois rebanho bovino. Porto Velho lidera os três.">
+            <source src="assets/ide-mapa-loop.mp4" type="video/mp4">
+          </video>
+          <button class="video__controle" type="button" id="video-controle" aria-pressed="true">
+            <svg class="ico ico--pausa" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg>
+            <svg class="ico ico--tocar" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+            <span class="sr">Reproduzir animação</span>
+          </button>
+        </div>
+
+        <div class="palco__veu" aria-hidden="true"></div>
+
+        <div class="envelope palco__conteudo">
+          <div class="palco__intro">
+            <h1 id="titulo">Os dados de Rondônia, município por município.</h1>
+            <p class="palco__lead">
+              A Infraestrutura de Dados Espaciais da SEDEC reúne indicadores econômicos, sociais e ambientais
+              dos 52 municípios do estado em mapas interativos e painéis. É aberta a qualquer pessoa.
+            </p>
+
+            <div class="busca" role="search">
+              <label for="busca-campo" class="busca__rotulo">O que você quer descobrir?</label>
+              <div class="busca__caixa">
+                <svg class="ico busca__lupa" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+                <input id="busca-campo" type="search" autocomplete="off" spellcheck="false"
+                  placeholder="Ex.: empregos, soja, saúde"
+                  role="combobox" aria-expanded="false" aria-controls="busca-lista" aria-autocomplete="list">
+              </div>
+              <ul id="busca-lista" class="busca__lista" role="listbox" aria-label="Temas encontrados" hidden></ul>
+              <p class="busca__vazio" id="busca-vazio" hidden>
+                Nada com esse nome. Tente um assunto mais geral, como <button type="button" data-sugestao="economia">economia</button>
+                ou <button type="button" data-sugestao="ambiente">ambiente</button>.
+              </p>
+            </div>
+
+            <div class="palco__acoes">
+              <a class="botao botao--primario" href="https://geo.sedec.ro.gov.br/" target="_blank" rel="noopener">
+                Abrir a IDE
+                <svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+              </a>
+              <a class="botao botao--fantasma" href="#temas">Ver os 10 temas</a>
+            </div>
+          </div>
+
+          <ol class="palco__capitulos" aria-label="Rondônia em três números">
+            <li class="capitulo" data-ind="0">
+              <h2>População</h2>
+              <p>Porto Velho concentra <strong>29%</strong> dos <strong>1,58 milhão</strong> de habitantes do estado. O resto se espalha pela BR-364, de Ariquemes a Vilhena.</p>
+              <p class="capitulo__fonte">IBGE, Censo 2022</p>
+            </li>
+            <li class="capitulo" data-ind="1">
+              <h2>PIB</h2>
+              <p>Um terço da riqueza do estado sai da capital: <strong>R$ 25,4 bilhões</strong> dos <strong>R$ 76,5 bilhões</strong> de Rondônia.</p>
+              <p class="capitulo__fonte">IBGE, PIB dos Municípios 2023</p>
+            </li>
+            <li class="capitulo" data-ind="2">
+              <h2>Rebanho bovino</h2>
+              <p><strong>17,1 milhões</strong> de cabeças, mais de 10 por habitante, em todos os 52 municípios.</p>
+              <p class="capitulo__fonte">IBGE, Pesquisa da Pecuária Municipal 2025</p>
+              <a class="botao botao--primario capitulo__acao" href="#explorar">Ver o meu município</a>
+            </li>
+          </ol>
+        </div>
+
+        <div class="palco__hud" aria-hidden="true">
+          <div class="palco__legenda">
+            <span class="palco__legenda-nome" id="palco-legenda-nome">População</span>
+            <span class="palco__escala" id="palco-escala"></span>
+            <span class="palco__legenda-nota">Altura e cor: quanto maior, mais alto e mais escuro</span>
+          </div>
+          <div class="palco__dica-uso">Arraste para girar · Clique num município</div>
+        </div>
+
+        <nav class="palco__progresso" aria-label="Capítulos do mapa 3D">
+          <button type="button" data-cap="0"><span>Início</span></button>
+          <button type="button" data-cap="1"><span>População</span></button>
+          <button type="button" data-cap="2"><span>PIB</span></button>
+          <button type="button" data-cap="3"><span>Rebanho</span></button>
+        </nav>
+
+        <div class="palco__rotulo" id="palco-rotulo" hidden><b>Porto Velho</b><span></span></div>
+        <div class="palco__tip" id="palco-tip" hidden></div>
+        <p class="palco__credito">Imagem: Esri, Maxar, Earthstar Geographics · Dados: IBGE</p>
+      </div>
+    </section>
+
+    <div class="faixa-fatos">
+      <div class="envelope">
+        <ul class="fatos" aria-label="A IDE em números">
+          <li><strong data-conta="52">52</strong> municípios</li>
+          <li><strong data-conta="10">10</strong> temas</li>
+          <li><strong data-conta="42">42</strong> painéis</li>
+          <li><strong data-conta="24">24</strong> mapas interativos</li>
+          <li>acesso <strong>aberto</strong> a todos</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CRESCIMENTO: gráfico 3D -->
+    <section class="cresce" id="crescimento" aria-labelledby="cresce-titulo">
+      <div class="envelope cresce__grade">
+        <div class="cresce__texto">
+          <h2 id="cresce-titulo">Uma economia que cresce</h2>
+          <div class="cresce__series" role="radiogroup" aria-label="Série do gráfico">
+            <button type="button" role="radio" aria-checked="true" data-serie="pib">PIB</button>
+            <button type="button" role="radio" aria-checked="false" data-serie="boi" tabindex="-1">Rebanho bovino</button>
+          </div>
+          <p class="cresce__frase" id="cresce-frase">
+            O PIB de Rondônia mais que triplicou entre 2010 e 2023: de <strong>R$ 23,9 bilhões</strong> para <strong>R$ 76,5 bilhões</strong>.
+          </p>
+
+          <div class="leitura" aria-live="polite">
+            <span class="leitura__ano" id="leitura-ano">2023</span>
+            <span class="leitura__valor" id="leitura-valor">R$ 76,5 bilhões</span>
+            <span class="leitura__var" id="leitura-var">+220% desde 2010</span>
+          </div>
+          <p class="cresce__nota" id="cresce-nota">Valores a preços correntes, sem descontar a inflação. Fonte: IBGE, PIB dos Municípios.</p>
+          <p class="cresce__dica">Passe o mouse ou toque nas colunas para ver cada ano.</p>
+        </div>
+
+        <div class="cresce__palco">
+          <canvas id="cresce-canvas" aria-hidden="true"></canvas>
+          <div class="cresce__anos" id="cresce-anos" aria-hidden="true"></div>
+          <div class="cresce__marca" id="cresce-marca" hidden></div>
+          <table class="sr" id="cresce-tabela"><caption>Série anual de Rondônia</caption></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEMAS -->
+    <section class="secao" id="temas" aria-labelledby="temas-titulo">
+      <div class="envelope">
+        <div class="secao__cabeca">
+          <h2 id="temas-titulo">O que você encontra na IDE</h2>
+          <p>Cada tema tem um mapa interativo e um painel com gráficos. Escolha pelo assunto.</p>
+        </div>
+
+        <div class="filtros" role="group" aria-label="Filtrar temas">
+          <button type="button" class="filtro" aria-pressed="true" data-grupo="todos">Todos <span>10</span></button>
+          <button type="button" class="filtro" aria-pressed="false" data-grupo="economia">Economia e trabalho <span>4</span></button>
+          <button type="button" class="filtro" aria-pressed="false" data-grupo="rural">Produção rural <span>2</span></button>
+          <button type="button" class="filtro" aria-pressed="false" data-grupo="territorio">Ambiente e território <span>3</span></button>
+          <button type="button" class="filtro" aria-pressed="false" data-grupo="social">Saúde <span>1</span></button>
+        </div>
+
+        <ul class="catalogo" id="catalogo"></ul>
+
+        <div class="tambem">
+          <h3>Também na IDE</h3>
+          <p>
+            Infraestrutura (energia elétrica, abastecimento de água, saneamento), segurança, educação,
+            imagens de satélite (uso e cobertura do solo e o histórico Wayback) e os programas da SEDEC:
+            PROAMPE, SISPAR Terceiro Setor, CONSIC e HUB de Inovação.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPLORAR -->
+    <section class="secao secao--tinta" id="explorar" aria-labelledby="explorar-titulo">
+      <div class="envelope">
+        <div class="secao__cabeca">
+          <h2 id="explorar-titulo">Comece pelo seu município</h2>
+          <p>Uma amostra do que a IDE faz, com dados públicos do IBGE. Escolha um município no mapa ou na lista.</p>
+        </div>
+
+        <div class="explorar">
+          <div class="explorar__mapa">
+            <div class="indicadores" role="radiogroup" aria-label="Indicador do mapa" id="indicadores"></div>
+            <div class="mapa" id="mapa">
+              <svg id="mapa-svg" role="img" aria-labelledby="mapa-desc"><desc id="mapa-desc">Mapa coroplético dos municípios de Rondônia.</desc></svg>
+              <div class="mapa__dica" id="mapa-dica" hidden></div>
+            </div>
+            <div class="legenda" id="legenda" aria-live="polite"></div>
+          </div>
+
+          <aside class="ficha" aria-labelledby="ficha-nome">
+            <label class="ficha__rotulo" for="municipio">Município</label>
+            <div class="seletor">
+              <select id="municipio"></select>
+              <svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+            <h3 class="ficha__nome" id="ficha-nome">Rondônia</h3>
+            <p class="ficha__sub" id="ficha-sub">Soma dos 52 municípios</p>
+            <dl class="ficha__dados" id="ficha-dados"></dl>
+            <p class="sr" id="ficha-anuncio" aria-live="polite"></p>
+            <a class="botao botao--primario botao--largo" href="https://geo.sedec.ro.gov.br/" target="_blank" rel="noopener">
+              Ver mais indicadores na IDE
+              <svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+            </a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMO USAR -->
+    <section class="secao" id="como-usar" aria-labelledby="como-titulo">
+      <div class="envelope">
+        <div class="secao__cabeca">
+          <h2 id="como-titulo">Como usar a IDE</h2>
+          <p>Não precisa saber nada de geoprocessamento. São três passos.</p>
+        </div>
+        <ol class="passos">
+          <li>
+            <div class="cartao3d">
+              <svg class="passos__ilus" viewBox="0 0 160 100" aria-hidden="true">
+                <rect x="1" y="1" width="158" height="98" rx="8" class="i-fundo"/>
+                <rect x="12" y="12" width="46" height="76" rx="5" class="i-painel"/>
+                <rect x="18" y="20" width="30" height="6" rx="3" class="i-cinza"/>
+                <rect x="18" y="31" width="26" height="6" rx="3" class="i-cinza"/>
+                <rect x="16" y="41" width="38" height="10" rx="4" class="i-azul p1-ativo"/>
+                <rect x="18" y="43.5" width="24" height="5" rx="2.5" class="i-branco p1-ativo"/>
+                <rect x="18" y="56" width="30" height="6" rx="3" class="i-cinza"/>
+                <rect x="18" y="67" width="22" height="6" rx="3" class="i-cinza"/>
+                <rect x="66" y="12" width="82" height="76" rx="5" class="i-painel"/>
+                <rect x="74" y="20" width="40" height="5" rx="2.5" class="i-cinza"/>
+                <path d="M74 78h66" class="i-eixo"/>
+                <rect x="78" y="54" width="9" height="24" rx="1.5" class="i-azul-claro p1-barra" style="--d:0s"/>
+                <rect x="92" y="44" width="9" height="34" rx="1.5" class="i-azul-medio p1-barra" style="--d:.12s"/>
+                <rect x="106" y="49" width="9" height="29" rx="1.5" class="i-azul-claro p1-barra" style="--d:.24s"/>
+                <rect x="120" y="34" width="9" height="44" rx="1.5" class="i-azul p1-barra" style="--d:.36s"/>
+                <circle cx="36" cy="46" r="7" class="p-onda p1-onda"/>
+                <g class="p-cursor p1-cursor"><path d="M0 0v14l3.6-3.6 2.6 6.2 2.2-1-2.6-5.9h5z"/></g>
+              </svg>
+            </div>
+            <h3>Escolha o tema</h3>
+            <p>No menu da IDE, cada tema abre um mapa e um painel: empregos, empresas, agricultura e outros.</p>
+          </li>
+          <li>
+            <div class="cartao3d">
+              <svg class="passos__ilus" id="ilus-mapa" viewBox="0 0 160 100" aria-hidden="true">
+                <rect x="1" y="1" width="158" height="98" rx="8" class="i-fundo"/>
+              </svg>
+            </div>
+            <h3>Clique no município</h3>
+            <p>O mapa mostra o valor de cada lugar com legenda. O painel traz gráficos, comparações e séries históricas.</p>
+          </li>
+          <li>
+            <div class="cartao3d">
+              <svg class="passos__ilus" viewBox="0 0 160 100" aria-hidden="true">
+                <rect x="1" y="1" width="158" height="98" rx="8" class="i-fundo"/>
+                <rect x="16" y="14" width="128" height="72" rx="6" class="i-painel"/>
+                <rect x="28" y="26" width="58" height="7" rx="3.5" class="i-tinta p3-linha" style="--d:0s"/>
+                <rect x="28" y="40" width="96" height="5" rx="2.5" class="i-cinza p3-linha" style="--d:.1s"/>
+                <rect x="28" y="50" width="84" height="5" rx="2.5" class="i-cinza p3-linha" style="--d:.2s"/>
+                <rect x="28" y="60" width="62" height="5" rx="2.5" class="i-cinza p3-linha" style="--d:.3s"/>
+                <g class="p3-selo">
+                  <rect x="94" y="56" width="44" height="20" rx="4" class="p3-selo-borda"/>
+                  <text x="116" y="64.5" class="p3-selo-t1">FONTE</text>
+                  <text x="116" y="72.2" class="p3-selo-t2">IBGE · 2022</text>
+                </g>
+              </svg>
+            </div>
+            <h3>Confira a fonte</h3>
+            <p>Cada mapa informa de onde vêm os dados e o ano de referência, para você citar com segurança.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- FONTES -->
+    <section class="secao secao--tinta" id="fontes" aria-labelledby="fontes-titulo">
+      <div class="envelope">
+        <div class="secao__cabeca">
+          <h2 id="fontes-titulo">Dados de fontes oficiais</h2>
+          <p>A IDE junta bases que normalmente ficam espalhadas por vários órgãos e coloca todas no mesmo mapa.</p>
+        </div>
+        <div class="fita" aria-hidden="true"><div class="fita__trilha"><span data-desc="Censo 2022, PIB dos Municípios, produção agrícola e pecuária, aquicultura e PNAD Contínua.">IBGE</span><span data-desc="Admissões e desligamentos com carteira assinada, em Rondônia e na Região Norte.">Novo CAGED</span><span data-desc="Inscritos, encaminhados, colocados, vagas e seguro-desemprego por agência.">SINE-RO</span><span data-desc="Junta Comercial de Rondônia: empresas ativas, abertura e fechamento de empresas.">JUCER</span><span data-desc="Emissão de GTAs, abate de animais e informe semestral de campo.">IDARON</span><span data-desc="Abastecimento de água, esgotamento sanitário e aterros.">SNIS</span><span data-desc="Estabelecimentos de saúde por tipo de unidade.">CNES</span><span data-desc="Índice FIRJAN de Desenvolvimento Municipal.">FIRJAN</span><span data-desc="Trabalho e renda em Rondônia e em Porto Velho (IBGE).">PNAD Contínua</span><span data-desc="População residente em cada município (IBGE).">Censo 2022</span><span data-desc="Produção Agrícola Municipal: o que se planta e quanto se colhe (IBGE).">PAM</span><span data-desc="Pesquisa da Pecuária Municipal: rebanhos e produtos de origem animal (IBGE).">PPM</span><span data-desc="Exportação, importação e balança comercial por município.">Comércio exterior</span><span data-desc="Censo 2022, PIB dos Municípios, produção agrícola e pecuária, aquicultura e PNAD Contínua.">IBGE</span><span data-desc="Admissões e desligamentos com carteira assinada, em Rondônia e na Região Norte.">Novo CAGED</span><span data-desc="Inscritos, encaminhados, colocados, vagas e seguro-desemprego por agência.">SINE-RO</span><span data-desc="Junta Comercial de Rondônia: empresas ativas, abertura e fechamento de empresas.">JUCER</span><span data-desc="Emissão de GTAs, abate de animais e informe semestral de campo.">IDARON</span><span data-desc="Abastecimento de água, esgotamento sanitário e aterros.">SNIS</span><span data-desc="Estabelecimentos de saúde por tipo de unidade.">CNES</span><span data-desc="Índice FIRJAN de Desenvolvimento Municipal.">FIRJAN</span><span data-desc="Trabalho e renda em Rondônia e em Porto Velho (IBGE).">PNAD Contínua</span><span data-desc="População residente em cada município (IBGE).">Censo 2022</span><span data-desc="Produção Agrícola Municipal: o que se planta e quanto se colhe (IBGE).">PAM</span><span data-desc="Pesquisa da Pecuária Municipal: rebanhos e produtos de origem animal (IBGE).">PPM</span><span data-desc="Exportação, importação e balança comercial por município.">Comércio exterior</span></div></div>
+        <p class="fita__info" id="fita-info" aria-hidden="true"><b>Passe o mouse sobre uma fonte</b> para ver o que ela fornece.</p>
+        <dl class="fontes sr">
+          <div><dt>IBGE</dt><dd>Censo 2022, PIB dos Municípios, Produção Agrícola (PAM), Pecuária (PPM), Aquicultura e PNAD Contínua</dd></div>
+          <div><dt>Novo CAGED</dt><dd>Admissões e desligamentos com carteira assinada, em RO e na Região Norte</dd></div>
+          <div><dt>SINE-RO</dt><dd>Inscritos, encaminhados, colocados, vagas e seguro-desemprego por agência</dd></div>
+          <div><dt>JUCER e Governo Federal</dt><dd>Empresas ativas, abertura e fechamento de empresas</dd></div>
+          <div><dt>Comércio exterior</dt><dd>Exportação, importação e balança comercial por município</dd></div>
+          <div><dt>IDARON</dt><dd>Emissão de GTAs, abate de animais e informe semestral de campo</dd></div>
+          <div><dt>SNIS</dt><dd>Abastecimento de água, esgotamento sanitário e aterros</dd></div>
+          <div><dt>CNES</dt><dd>Estabelecimentos de saúde por tipo de unidade</dd></div>
+          <div><dt>Indicadores sociais</dt><dd>IDH, Índice FIRJAN de Desenvolvimento Municipal e índice de Gini</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- DO DADO AO MAPA -->
+    <section class="secao fluxo" id="sobre" aria-labelledby="sobre-titulo">
+      <div class="envelope">
+        <div class="secao__cabeca">
+          <h2 id="sobre-titulo">Do dado ao mapa</h2>
+          <p>
+            A IDE é mantida pela GEODE, a Geo Inteligência de Dados Econômicos da SEDEC, Secretaria de Estado do
+            Desenvolvimento Econômico de Rondônia. A equipe reúne bases de vários órgãos, cruza tudo por município
+            e publica em mapas e painéis na plataforma ArcGIS.
+          </p>
+        </div>
+
+        <div class="fluxo__diagrama" id="fluxo">
+          <svg class="fluxo__linhas" id="fluxo-linhas" aria-hidden="true"></svg>
+
+          <ul class="fluxo__fontes" aria-label="Algumas fontes">
+            <li data-no="fonte">IBGE</li>
+            <li data-no="fonte">Novo CAGED</li>
+            <li data-no="fonte">SINE-RO</li>
+            <li data-no="fonte">JUCER</li>
+            <li data-no="fonte">SNIS</li>
+            <li data-no="fonte">CNES</li>
+          </ul>
+
+          <div class="fluxo__no" data-no="geode">
+            <strong>GEODE · SEDEC</strong>
+            <ol>
+              <li>Reúne</li>
+              <li>Cruza por município</li>
+              <li>Publica no mapa</li>
+            </ol>
+          </div>
+
+          <div class="fluxo__mapa" data-no="mapa">
+            <svg id="fluxo-mapa" aria-hidden="true"></svg>
+            <span>IDE Rondônia</span>
+          </div>
+
+          <div class="fluxo__voce" data-no="voce">
+            <span class="fluxo__avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.8-3.8 3.6-6 7-6s6.2 2.2 7 6"/></svg>
+            </span>
+            <strong>Você</strong>
+            <span>consulta de graça, de qualquer lugar</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- CHAMADA FINAL -->
+    <section class="chamada" aria-labelledby="chamada-titulo">
+      <div class="envelope chamada__grade">
+        <h2 id="chamada-titulo">Os números do seu município estão a um clique.</h2>
+        <a class="botao botao--claro" href="https://geo.sedec.ro.gov.br/" target="_blank" rel="noopener">
+          Abrir a IDE
+          <svg class="ico" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <nav class="trilho" id="trilho" aria-label="Progresso da página">
+    <div class="trilho__pista" id="trilho-pista">
+      <div class="trilho__cheio" id="trilho-cheio"></div>
+      <div class="trilho__cabeca" id="trilho-cabeca"><span class="trilho__rotulo" id="trilho-rotulo">Início</span></div>
+    </div>
+    <ol class="trilho__marcos" id="trilho-marcos"></ol>
+  </nav>
+
+  <footer class="rodape">
+    <div class="envelope rodape__grade">
+      <div>
+        <img class="rodape__logo" src="assets/geode-logo.png" alt="" width="130" height="52" loading="lazy">
+        <p>Esta página apresenta a IDE. Os mapas, painéis e dados oficiais estão em
+          <a href="https://geo.sedec.ro.gov.br/" target="_blank" rel="noopener">geo.sedec.ro.gov.br</a>.</p>
+      </div>
+      <div>
+        <h2>Créditos da amostra</h2>
+        <p>Malha municipal, Censo 2022, PIB dos Municípios 2023, Pesquisa da Pecuária Municipal 2025 e área territorial: IBGE.
+          Imagem de satélite do vídeo: Esri, Maxar, Earthstar Geographics.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/Flip.min.js"></script>
+  <script src="assets/ro-data.js"></script>
+  <script src="assets/ro-sat.js"></script>
+  <script src="assets/ro-series.js"></script>
+  <script src="icones.js"></script>
+  <script src="app.js"></script>
+  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+  <script type="module" src="palco3d.js"></script>
+  <script type="module" src="grafico3d.js"></script>
+</body>
+</html>
