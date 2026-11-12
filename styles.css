@@ -145,25 +145,6 @@ a:hover { color: var(--azul-forte); text-decoration-thickness: 2px; }
 .topo__nav a:hover { color: var(--azul); background: var(--azul-claro); }
 
 /* ---------- Abertura ---------- */
-.abertura {
-  padding-block: clamp(40px, 6vw, 80px) clamp(40px, 5vw, 64px);
-  background:
-    linear-gradient(180deg, var(--azul-claro) 0%, rgba(231, 240, 247, 0) 70%);
-}
-.abertura__grade {
-  display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: clamp(32px, 5vw, 72px);
-  align-items: center;
-}
-.abertura h1 {
-  font-size: clamp(2.35rem, 1.4rem + 3.4vw, 4rem);
-  letter-spacing: -0.035em;
-  line-height: 1.04;
-  color: var(--azul-profundo);
-}
-.abertura__lead { margin-top: 22px; font-size: clamp(17px, 1rem + 0.3vw, 19.5px); color: var(--tinta-2); max-width: 36em; }
-.abertura__acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
 
 /* Busca */
 .busca { position: relative; margin-top: 30px; max-width: 540px; }
@@ -208,15 +189,6 @@ a:hover { color: var(--azul-forte); text-decoration-thickness: 2px; }
 }
 
 /* Vídeo */
-.abertura__midia { margin: 0; }
-.video {
-  position: relative; overflow: hidden;
-  aspect-ratio: 16 / 9;
-  border-radius: 14px;
-  background: #0b1a22;
-  box-shadow: var(--sombra-alta);
-}
-.video video { width: 100%; height: 100%; object-fit: cover; }
 .video__controle {
   position: absolute; right: 12px; top: 12px;
   display: grid; place-items: center;
@@ -230,7 +202,6 @@ a:hover { color: var(--azul-forte); text-decoration-thickness: 2px; }
 .video__controle .ico--tocar { display: none; fill: currentColor; }
 .video__controle[aria-pressed="true"] .ico--pausa { display: none; }
 .video__controle[aria-pressed="true"] .ico--tocar { display: block; }
-.abertura__midia figcaption { margin-top: 12px; font-size: 14px; color: var(--tinta-3); }
 
 /* Fatos */
 .fatos {
@@ -410,28 +381,10 @@ a:hover { color: var(--azul-forte); text-decoration-thickness: 2px; }
 .passos p { margin-top: 10px; color: var(--tinta-2); }
 .i-fundo { fill: var(--fundo-2); stroke: var(--linha); }
 .i-painel { fill: #fff; stroke: var(--linha-forte); }
-.i-ativo { fill: var(--azul); }
-.i-linha { fill: var(--linha); }
-.i-traco { stroke: var(--linha-forte); stroke-width: 6; stroke-linecap: round; fill: none; }
-.i-terra { fill: #d6e7f3; stroke: #fff; stroke-width: 2; }
-.i-divisa { fill: none; stroke: #fff; stroke-width: 2; }
-.i-sel { fill: #2f7fbe; stroke: var(--azul-profundo); stroke-width: 2.5; stroke-linejoin: round; }
-.i-ponto { fill: #fff; stroke: var(--azul-profundo); stroke-width: 2.5; }
 
 /* ---------- Fontes ---------- */
-.fontes {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 0; border-top: 1px solid var(--linha-forte);
-}
-.fontes > div { padding: 22px 24px 22px 0; border-bottom: 1px solid var(--linha-forte); }
-.fontes dt { font-weight: 750; font-size: 17px; color: var(--tinta); }
-.fontes dd { margin: 4px 0 0; font-size: 15.5px; color: var(--tinta-2); }
 
 /* ---------- Sobre ---------- */
-.sobre { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
-.sobre__logo { width: 261px; height: auto; mix-blend-mode: multiply; }
-.sobre h2 { font-size: clamp(1.7rem, 1.3rem + 1.2vw, 2.25rem); letter-spacing: -0.03em; color: var(--azul-profundo); }
-.sobre p { margin-top: 14px; font-size: 18px; color: var(--tinta-2); max-width: 60ch; }
 
 /* ---------- Chamada ---------- */
 .chamada { background: var(--azul); color: #fff; padding-block: clamp(48px, 6vw, 72px); }
@@ -449,12 +402,10 @@ a:hover { color: var(--azul-forte); text-decoration-thickness: 2px; }
 @media (max-width: 1080px) {
   .topo__nav { display: none; }
   .topo__barra .botao { margin-left: auto; }
-  .abertura__grade { grid-template-columns: 1fr; }
   .tema { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .tema__acoes { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; padding-left: 70px; }
   .explorar { grid-template-columns: 1fr; }
   .ficha { position: static; }
-  .fontes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 720px) {
@@ -474,9 +425,6 @@ a:hover { color: var(--azul-forte); text-decoration-thickness: 2px; }
   .indicadores button { padding: 0 10px; font-size: 14px; }
   .passos { grid-template-columns: 1fr; }
   .passos__ilus { max-width: 320px; }
-  .fontes { grid-template-columns: 1fr; }
-  .sobre { grid-template-columns: 1fr; }
-  .sobre__logo { width: 200px; }
   .rodape__grade { grid-template-columns: 1fr; }
   .fatos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
   .fatos li { padding-right: 0; margin-right: 0; border-right: 0; }
