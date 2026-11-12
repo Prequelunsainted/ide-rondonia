@@ -1,0 +1,17 @@
+# HyperFrames: renders e cache local
+video/.hyperframes/
+video/*.mp4
+video/node_modules/
+
+# Python
+__pycache__/
+*.pyc
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Arquivos baixados temporariamente
+dados/config-ide.json

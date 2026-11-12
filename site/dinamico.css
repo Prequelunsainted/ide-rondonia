@@ -1,0 +1,366 @@
+/* =====================================================================
+   CRESCIMENTO: gráfico 3D com seta
+   ===================================================================== */
+.cresce {
+  position: relative; overflow: hidden;
+  padding-block: var(--sec);
+  color: #fff;
+  background:
+    radial-gradient(ellipse 70% 60% at 72% 55%, #134466 0%, rgba(19, 68, 102, 0) 70%),
+    #0b2a40;
+}
+.cresce__grade {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(24px, 4vw, 56px); align-items: center;
+}
+.cresce h2 { font-size: clamp(1.9rem, 1.3rem + 1.8vw, 2.75rem); letter-spacing: -0.03em; color: #fff; }
+.cresce__series {
+  display: inline-flex; gap: 4px; margin-top: 22px; padding: 4px;
+  border-radius: 10px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.cresce__series button {
+  min-height: 40px; padding: 0 16px; border: 0; border-radius: 7px;
+  background: transparent; color: #c9d9e4; font: inherit; font-size: 15px; font-weight: 650; cursor: pointer;
+  transition: background-color 0.25s, color 0.25s;
+}
+.cresce__series button:hover { color: #fff; }
+.cresce__series button[aria-checked="true"] { background: #fff; color: var(--azul-profundo); }
+.cresce :focus-visible { box-shadow: 0 0 0 3px #0b2a40, 0 0 0 5px #9fd0ff; }
+.cresce__frase { margin-top: 20px; font-size: 18px; color: #c9d9e4; max-width: 34em; }
+.cresce__frase strong { color: #fff; font-weight: 750; }
+.leitura { display: grid; justify-items: start; gap: 2px; margin-top: 30px; }
+.leitura__ano { font-size: 15px; font-weight: 650; color: #9fb6c6; font-variant-numeric: tabular-nums; }
+.leitura__valor {
+  font-size: clamp(2.2rem, 1.4rem + 2.6vw, 3.7rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.leitura__var {
+  margin-top: 8px; padding: 4px 11px; border-radius: 999px;
+  background: rgba(64, 196, 132, 0.14); color: #86e3b6; font-size: 14.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.leitura__var[data-sinal="neg"] { background: rgba(228, 127, 86, 0.16); color: #f6b799; }
+.cresce__nota { margin-top: 18px; font-size: 13.5px; color: #8fb0c4; max-width: 40em; }
+.cresce__dica { margin-top: 6px; font-size: 13.5px; color: #8fb0c4; }
+.cresce__palco { position: relative; height: clamp(380px, 44vw, 600px); }
+.cresce__palco canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cresce__anos { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.cresce__anos span {
+  position: absolute; left: 0; top: 0;
+  font-size: 12.5px; font-weight: 600; color: #8fb0c4; font-variant-numeric: tabular-nums;
+  transition: color 0.2s;
+}
+.cresce__anos span.ativo { color: #fff; }
+@media (max-width: 600px) { .cresce__anos span.par:not(.ativo) { display: none; } }
+.catalogo { position: relative; }
+.cresce__marca {
+  position: absolute; left: 0; top: 0; pointer-events: none;
+  margin-top: -8px; padding: 6px 11px; border-radius: 8px;
+  background: #fff; color: var(--tinta); font-size: 14px; font-weight: 750; white-space: nowrap;
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.5);
+  font-variant-numeric: tabular-nums;
+}
+.cresce__marca[hidden] { display: none; }
+.cresce--sem3d canvas, .cresce--sem3d .cresce__anos { display: none; }
+.cresce__barras2d { position: absolute; inset: 0 0 28px; display: flex; align-items: flex-end; gap: 6px; }
+.cresce__barras2d button {
+  position: relative; flex: 1; height: var(--h); border: 0; border-radius: 4px 4px 0 0;
+  background: var(--c); cursor: pointer; transition: filter 0.2s;
+}
+.cresce__barras2d button:hover, .cresce__barras2d button:focus-visible { filter: brightness(1.2); }
+.cresce__barras2d span { position: absolute; left: 50%; top: 100%; transform: translateX(-50%); margin-top: 6px; font-size: 12px; color: #8fb0c4; }
+
+@media (max-width: 960px) {
+  .cresce__grade { grid-template-columns: 1fr; }
+  .cresce__palco { height: clamp(340px, 80vw, 480px); }
+}
+
+/* =====================================================================
+   TRILHO: barra de progresso animada na margem
+   ===================================================================== */
+.trilho {
+  position: fixed; z-index: 30; right: 8px; top: 92px; bottom: 26px; width: 20px;
+  display: flex; justify-content: center;
+}
+.trilho__pista {
+  position: relative; width: 4px; height: 100%; border-radius: 4px;
+  background: rgba(120, 140, 155, 0.28);
+  cursor: pointer; touch-action: none;
+  transition: width 0.25s var(--ease);
+}
+.trilho:hover .trilho__pista, .trilho.arrastando .trilho__pista { width: 6px; }
+.trilho__cheio {
+  position: absolute; inset: 0; border-radius: inherit;
+  transform-origin: 50% 0; transform: scaleY(0);
+  background: linear-gradient(180deg, #005b96 0%, #2f87c9 25%, #9fd0ff 50%, #2f87c9 75%, #005b96 100%);
+  background-size: 100% 220px;
+  animation: trilho-fluxo 2.4s linear infinite;
+}
+@keyframes trilho-fluxo { to { background-position: 0 220px; } }
+.trilho__cabeca {
+  position: absolute; left: 50%; top: 0; width: 14px; height: 14px; margin: -7px 0 0 -7px;
+  border-radius: 50%; background: #fff;
+  box-shadow: 0 0 0 3px #005b96, 0 3px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s var(--ease);
+}
+.trilho:hover .trilho__cabeca, .trilho.arrastando .trilho__cabeca { transform: scale(1.25); }
+.trilho__cabeca::after {
+  content: ""; position: absolute; inset: -3px; border-radius: 50%;
+  border: 2px solid #2f87c9; opacity: 0;
+}
+.trilho.rolando .trilho__cabeca::after { animation: trilho-pulso 1.1s var(--ease) infinite; }
+@keyframes trilho-pulso { from { transform: scale(0.8); opacity: 0.9; } to { transform: scale(2.4); opacity: 0; } }
+.trilho__rotulo {
+  position: absolute; right: 22px; top: 50%;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--azul-profundo); color: #fff; font-size: 13px; font-weight: 650; white-space: nowrap;
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.45);
+  opacity: 0; transform: translate(10px, -50%);
+  transition: opacity 0.3s, transform 0.4s var(--ease);
+  pointer-events: none;
+}
+.trilho.rolando .trilho__rotulo, .trilho:hover .trilho__rotulo, .trilho.arrastando .trilho__rotulo { opacity: 1; transform: translate(0, -50%); }
+.trilho__marcos { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; pointer-events: none; }
+.trilho__marcos li { position: absolute; left: 50%; }
+.trilho__marcos button {
+  position: relative; display: block; width: 10px; height: 10px; margin: -5px 0 0 -5px; padding: 0;
+  border-radius: 50%; border: 2px solid rgba(120, 140, 155, 0.7); background: #fff;
+  pointer-events: auto; cursor: pointer;
+  transition: border-color 0.3s, transform 0.25s var(--ease);
+}
+.trilho__marcos button.passou { border-color: #005b96; background: #9fd0ff; }
+.trilho__marcos button:hover, .trilho__marcos button:focus-visible { transform: scale(1.4); }
+.trilho__marcos button span {
+  position: absolute; right: 18px; top: 50%; transform: translate(6px, -50%);
+  padding: 4px 9px; border-radius: 6px; background: #fff; color: var(--tinta);
+  font-size: 12.5px; font-weight: 650; white-space: nowrap;
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.35);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.3s var(--ease);
+}
+.trilho__marcos button:hover span, .trilho__marcos button:focus-visible span { opacity: 1; transform: translate(0, -50%); }
+
+/* com o trilho, a barra nativa some em telas com mouse */
+@media (hover: hover) and (pointer: fine) {
+  html.tem-trilho { scrollbar-width: none; }
+  html.tem-trilho::-webkit-scrollbar { display: none; }
+}
+@media (hover: none), (pointer: coarse), (max-width: 720px) {
+  .trilho { right: 2px; width: 8px; pointer-events: none; }
+  .trilho__pista { width: 3px; }
+  .trilho__marcos, .trilho__rotulo { display: none; }
+  .trilho__cabeca { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; box-shadow: 0 0 0 2px #005b96; }
+}
+
+/* =====================================================================
+   FILTROS COM PÍLULA DESLIZANTE
+   ===================================================================== */
+.filtros { position: relative; }
+.filtro { position: relative; z-index: 1; }
+.filtros.com-pilula .filtro[aria-pressed="true"] { background: transparent; border-color: transparent; }
+.filtros__pilula {
+  position: absolute; left: 0; top: 0; z-index: 0;
+  border-radius: 999px; background: var(--azul-profundo);
+  transition: transform 0.5s var(--ease), width 0.5s var(--ease), height 0.5s var(--ease);
+  pointer-events: none;
+}
+
+/* =====================================================================
+   FITA DE FONTES EM MOVIMENTO
+   ===================================================================== */
+.fita {
+  overflow: hidden; margin: 0 calc(-1 * var(--gutter)) clamp(28px, 4vw, 44px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.fita__trilha {
+  display: flex; gap: clamp(28px, 4vw, 56px); width: max-content;
+  animation: fita 46s linear infinite;
+}
+.fita:hover .fita__trilha { animation-play-state: paused; }
+.fita__trilha span {
+  font-size: clamp(30px, 2rem + 2vw, 64px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
+  color: transparent; -webkit-text-stroke: 1.4px #8aa3b5;
+  transition: color 0.3s, -webkit-text-stroke-color 0.3s;
+}
+.fita__trilha span:nth-child(3n + 1) { color: var(--azul); -webkit-text-stroke-color: var(--azul); }
+.fita__trilha span:hover { color: var(--azul-profundo); -webkit-text-stroke-color: var(--azul-profundo); }
+@keyframes fita { to { transform: translateX(-50%); } }
+
+/* =====================================================================
+   CHAMADA FINAL
+   ===================================================================== */
+.chamada { position: relative; overflow: hidden; }
+.chamada .botao--claro { will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .trilho__cheio, .fita__trilha { animation: none; }
+  .fita__trilha { flex-wrap: wrap; width: auto; padding-inline: var(--gutter); }
+  .filtros__pilula { transition: none; }
+}
+
+/* =====================================================================
+   ÍCONES ANIMADOS DOS TEMAS
+   ===================================================================== */
+.tema__id { grid-template-columns: 58px 1fr; }
+.catalogo .tema-ico { width: 58px; height: 58px; border-radius: 15px; }
+.tema-ico svg.ico-vivo { width: 44px; height: 44px; overflow: visible; }
+.busca__item .tema-ico svg.ico-vivo { width: 30px; height: 30px; }
+.ico-vivo .i-linha { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.ico-vivo .i-cheio { fill: currentColor; stroke: none; }
+.ico-vivo * { transform-box: fill-box; transform-origin: 50% 50%; }
+.ico-vivo .i-sobe, .ico-vivo .i-copa, .ico-vivo .i-gota { transform-origin: 50% 100%; }
+.ico-vivo .i-folha, .ico-vivo .i-orelha { transform-origin: var(--o, 50% 50%); }
+.ico-vivo .i-onda { opacity: 0; }
+.anima .i-sobe { animation: ic-sobe 0.7s var(--ease) var(--d, 0s) both; }
+.anima .i-pop { animation: ic-pop 0.55s var(--ease) var(--d, 0s) both; }
+.anima .i-traca { stroke-dasharray: 1; animation: ic-traca 0.9s cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0s) both; }
+.anima .i-acende { animation: ic-acende 0.5s ease var(--d, 0s) both; }
+.anima .i-folha { animation: ic-folha 0.7s var(--ease) var(--d, 0s) both; }
+.anima .i-orelha { animation: ic-orelha 1.3s ease 0.2s; }
+.anima .i-orelha--d { animation-name: ic-orelha-d; }
+.anima .i-pisca { animation: ic-pisca 1.4s ease 0.3s; }
+.anima .i-copa { animation: ic-vento 1.8s ease; }
+.anima .i-brilho { animation: ic-brilho 0.9s var(--ease) var(--d, 0s) both; }
+.anima .i-onda { animation: ic-onda 1.2s ease-out var(--d, 0s) both; }
+.anima .i-gota { animation: ic-gota 0.75s cubic-bezier(0.5, 0, 0.6, 1) both; }
+.anima .i-pulsa { animation: ic-pop 0.55s var(--ease) var(--d, 0s) both, ic-pulsa 0.9s ease 1.4s 2; }
+@keyframes ic-sobe { from { transform: scaleY(0); } }
+@keyframes ic-pop { from { transform: scale(0); opacity: 0; } }
+@keyframes ic-traca { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes ic-acende { from { opacity: 0.1; } }
+@keyframes ic-folha { from { transform: scale(0) rotate(-25deg); opacity: 0; } }
+@keyframes ic-orelha { 0%, 100% { transform: none; } 20% { transform: rotate(16deg); } 45% { transform: rotate(-6deg); } 70% { transform: rotate(9deg); } }
+@keyframes ic-orelha-d { 0%, 100% { transform: none; } 20% { transform: rotate(-16deg); } 45% { transform: rotate(6deg); } 70% { transform: rotate(-9deg); } }
+@keyframes ic-pisca { 0%, 40%, 52%, 100% { transform: none; } 46% { transform: scaleY(0.1); } }
+@keyframes ic-vento { 0%, 100% { transform: none; } 25% { transform: rotate(-6deg); } 55% { transform: rotate(4deg); } 80% { transform: rotate(-2deg); } }
+@keyframes ic-brilho { from { transform: scale(0) rotate(-120deg); opacity: 0; } 60% { transform: scale(1.35) rotate(10deg); opacity: 1; } }
+@keyframes ic-onda { from { transform: scale(0.3); opacity: 0.9; } to { transform: scale(1.1); opacity: 0; } }
+@keyframes ic-gota { from { transform: translateY(-14px); opacity: 0; } 60% { transform: none; opacity: 1; } 78% { transform: scale(1.1, 0.88); } }
+@keyframes ic-pulsa { 50% { transform: scale(1.3); } }
+@media (max-width: 720px) {
+  .tema__id { grid-template-columns: 50px 1fr; }
+  .catalogo .tema-ico { width: 50px; height: 50px; border-radius: 13px; }
+  .tema-ico svg.ico-vivo { width: 38px; height: 38px; }
+}
+
+/* =====================================================================
+   ILUSTRAÇÕES DOS PASSOS (laço de 5 s enquanto estão na tela)
+   ===================================================================== */
+.passos__ilus text { font-family: var(--fonte); }
+.i-cinza { fill: var(--linha); }
+.i-azul { fill: var(--azul); }
+.i-branco { fill: #fff; }
+.i-azul-claro { fill: #a6cde9; }
+.i-azul-medio { fill: #62a7d6; }
+.i-tinta { fill: #9fb0bd; }
+.i-eixo { stroke: var(--linha-forte); stroke-width: 1.5; fill: none; }
+.p-cursor { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.25)); }
+.p-cursor path { fill: #fff; stroke: var(--tinta); stroke-width: 1.2; stroke-linejoin: round; }
+.p-onda { fill: none; stroke: var(--azul); stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; }
+@keyframes p-onda { 0%, 29% { transform: scale(0.3); opacity: 0; } 30% { opacity: 0.9; } 42%, 100% { transform: scale(1.7); opacity: 0; } }
+@keyframes p-cursor-vai { 0% { transform: translate(150px, 96px); opacity: 0; } 6% { opacity: 1; } 28%, 82% { transform: translate(var(--tx), var(--ty)); opacity: 1; } 94%, 100% { transform: translate(150px, 96px); opacity: 0; } }
+
+/* passo 1: cursor escolhe o tema e o painel se preenche */
+.p1-cursor { --tx: 40px; --ty: 49px; transform: translate(var(--tx), var(--ty)); }
+.p1-barra { transform-box: fill-box; transform-origin: 50% 100%; }
+.visivel .p1-cursor { animation: p-cursor-vai 5s var(--ease) infinite; }
+.visivel .p1-onda { animation: p-onda 5s ease-out infinite; }
+.visivel .i-azul.p1-ativo { animation: p1-ativo 5s ease infinite; }
+.visivel .i-branco.p1-ativo { animation: p1-texto 5s ease infinite; }
+.visivel .p1-barra { animation: p1-barra 5s var(--ease) var(--d, 0s) infinite; }
+@keyframes p1-ativo { 0%, 30% { opacity: 0; } 34%, 90% { opacity: 1; } 98%, 100% { opacity: 0; } }
+@keyframes p1-texto { 0%, 30% { fill: #d9e2e9; } 34%, 90% { fill: #fff; } 98%, 100% { fill: #d9e2e9; } }
+@keyframes p1-barra { 0%, 36% { transform: scaleY(0); } 50%, 90% { transform: none; } 98%, 100% { transform: scaleY(0); } }
+
+/* passo 2: mapa real; clique em Ji-Paraná, o município sobe em 3D e mostra o valor */
+.p2-sombra path { fill: rgba(11, 42, 64, 0.12); }
+.p2-muns path { fill: #d6e7f3; stroke: #fff; stroke-width: 9; stroke-linejoin: round; }
+.p2-lado path { fill: #00467a; }
+.p2-topo { transform: translateY(-5px); }
+.p2-topo path { fill: #2f7fbe; stroke: #fff; stroke-width: 10; stroke-linejoin: round; }
+.p2-cartao { transform-box: fill-box; transform-origin: 0% 100%; }
+.p2-cartao rect { fill: #fff; stroke: var(--linha-forte); stroke-width: 0.8; filter: drop-shadow(0 2px 3px rgba(11, 42, 64, 0.18)); }
+.p2-cartao-linha { stroke: var(--azul-profundo); stroke-width: 1; fill: none; }
+.p2-t1 { font-size: 6.4px; font-weight: 750; fill: var(--tinta); }
+.p2-t2 { font-size: 5.6px; font-weight: 550; fill: var(--tinta-2); }
+.p2-cursor { transform: translate(var(--tx), var(--ty)); }
+.visivel .p2-cursor { animation: p-cursor-vai 5s var(--ease) infinite; }
+.visivel .p2-onda { animation: p-onda 5s ease-out infinite; }
+.visivel .p2-topo { animation: p2-topo 5s var(--ease) infinite; }
+.visivel .p2-cartao { animation: p2-cartao 5s var(--ease) infinite; }
+@keyframes p2-topo { 0%, 30% { transform: none; } 40%, 88% { transform: translateY(-5px); } 96%, 100% { transform: none; } }
+@keyframes p2-cartao { 0%, 40% { opacity: 0; transform: translateY(6px) scale(0.9); } 48%, 88% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; } }
+
+/* passo 3: o selo da fonte é carimbado no cartão */
+.p3-linha { transform-box: fill-box; transform-origin: 0 50%; }
+.p3-selo { transform-box: fill-box; transform-origin: center; transform: rotate(-8deg); }
+.p3-selo-borda { fill: rgba(0, 91, 150, 0.08); stroke: var(--azul); stroke-width: 1.4; }
+.p3-selo-t1 { font-size: 4.8px; font-weight: 750; letter-spacing: 0.14em; fill: var(--azul); text-anchor: middle; }
+.p3-selo-t2 { font-size: 7px; font-weight: 800; fill: var(--azul); text-anchor: middle; }
+.visivel .p3-linha { animation: p3-linha 5s var(--ease) var(--d, 0s) infinite; }
+.visivel .p3-selo { animation: p3-selo 5s cubic-bezier(0.2, 0.8, 0.2, 1) infinite; }
+@keyframes p3-linha { 0% { transform: scaleX(0); } 16%, 92% { transform: none; } 100% { transform: scaleX(0); } }
+@keyframes p3-selo { 0%, 34% { opacity: 0; transform: rotate(-22deg) scale(2); } 42% { opacity: 1; transform: rotate(-8deg) scale(0.9); } 46%, 90% { opacity: 1; transform: rotate(-8deg); } 98%, 100% { opacity: 0; transform: rotate(-8deg); } }
+
+/* =====================================================================
+   FONTES: a faixa explica cada fonte
+   ===================================================================== */
+.fita__trilha span { cursor: pointer; }
+.fita__trilha span.foco { color: var(--azul-profundo); -webkit-text-stroke-color: var(--azul-profundo); }
+.fita.parada .fita__trilha { animation-play-state: paused; }
+.fita__info { min-height: 3.3em; max-width: 52rem; margin: -10px 0 0; font-size: 18px; color: var(--tinta-2); }
+.fita__info b { color: var(--azul-profundo); font-weight: 750; }
+.fita__info.ativo b { color: var(--azul); }
+.fita__info.trocando { animation: info-entra 0.45s var(--ease); }
+@keyframes info-entra { from { opacity: 0; transform: translateY(6px); } }
+
+/* =====================================================================
+   DO DADO AO MAPA (fluxo animado)
+   ===================================================================== */
+.fluxo__diagrama {
+  position: relative;
+  display: grid; align-items: center;
+  grid-template-columns: minmax(140px, 0.9fr) minmax(210px, 1.1fr) minmax(220px, 1.3fr) minmax(140px, 0.8fr);
+  gap: clamp(40px, 6vw, 96px);
+  padding-block: 12px;
+}
+.fluxo__linhas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
+.fluxo__diagrama > :not(svg) { position: relative; z-index: 1; }
+.fluxo__linha { fill: none; stroke: #b9d2e5; stroke-width: 1.6; stroke-dasharray: 4 5; }
+.fluxo__ponto { fill: var(--azul); }
+.fluxo__ponto--2 { fill: #62a7d6; }
+.fluxo__fontes { display: grid; gap: 10px; justify-items: start; margin: 0; padding: 0; list-style: none; }
+.fluxo__fontes li {
+  padding: 8px 14px; border-radius: 999px;
+  background: #fff; border: 1px solid var(--linha-forte); box-shadow: var(--sombra);
+  font-size: 15px; font-weight: 650; color: var(--tinta);
+}
+.fluxo__no { padding: 22px 24px; border-radius: 16px; background: var(--azul-profundo); color: #fff; box-shadow: var(--sombra-alta); }
+.fluxo__no strong { display: block; font-size: 20px; letter-spacing: -0.01em; }
+.fluxo__no ol { display: grid; gap: 7px; margin: 14px 0 0; padding: 0; list-style: none; counter-reset: etapa; }
+.fluxo__no li { counter-increment: etapa; display: flex; align-items: center; gap: 10px; font-size: 15px; color: #c9d9e4; }
+.fluxo__no li::before {
+  content: counter(etapa); display: grid; place-items: center; flex: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14); color: #fff; font-size: 12px; font-weight: 750;
+}
+.fluxo__mapa {
+  display: grid; justify-items: center; gap: 8px; padding: 16px;
+  border-radius: 16px; background: #fff; border: 1px solid var(--linha); box-shadow: var(--sombra);
+}
+.fluxo__mapa svg { width: 100%; max-width: 240px; height: auto; }
+.fluxo__mapa path { fill: #d6e7f3; stroke: #fff; stroke-width: 6; stroke-linejoin: round; transition: fill 1.2s var(--ease); }
+.fluxo__mapa path.aceso { fill: #2f7fbe; transition-duration: 0.25s; }
+.fluxo__mapa span { font-size: 14px; font-weight: 750; color: var(--azul-profundo); }
+.fluxo__voce { display: grid; justify-items: center; gap: 6px; text-align: center; }
+.fluxo__avatar {
+  display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%;
+  background: var(--azul-claro); color: var(--azul); box-shadow: 0 0 0 6px rgba(231, 240, 247, 0.7);
+}
+.fluxo__avatar svg { width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.fluxo__voce strong { font-size: 18px; }
+.fluxo__voce span:last-child { max-width: 15ch; font-size: 14px; color: var(--tinta-3); }
+@media (max-width: 900px) {
+  .fluxo__diagrama { grid-template-columns: 1fr; justify-items: center; gap: 56px; }
+  .fluxo__fontes { display: flex; flex-wrap: wrap; justify-content: center; max-width: 420px; }
+  .fluxo__no, .fluxo__mapa { width: min(100%, 360px); }
+}
