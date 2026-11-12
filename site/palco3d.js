@@ -36,6 +36,7 @@ if (!RO || !SAT || !gsap || !temWebGL()) {
 
 function iniciar() {
   palco.classList.add("palco--3d");
+  let sujo = true; // força um novo desenho (textura carregada, tamanho mudou, voltou à tela)
 
   /* ---------- Dados e escalas ---------- */
   const S = 0.01;
@@ -62,7 +63,8 @@ function iniciar() {
 
   /* ---------- Renderizador, cena, luz ---------- */
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const leve = window.innerWidth < 720 || (navigator.hardwareConcurrency || 8) <= 4;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, leve ? 1.5 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -80,7 +82,7 @@ function iniciar() {
   const sol = new THREE.DirectionalLight(0xfff4e6, 2.4);
   sol.position.set(-4.5, 9, 5);
   sol.castShadow = true;
-  sol.shadow.mapSize.set(2048, 2048);
+  sol.shadow.mapSize.set(leve ? 1024 : 2048, leve ? 1024 : 2048);
   Object.assign(sol.shadow.camera, { left: -7.5, right: 7.5, top: 7.5, bottom: -7.5, near: 1, far: 30 });
   sol.shadow.bias = -0.0004;
   sol.shadow.normalBias = 0.02;
@@ -89,6 +91,7 @@ function iniciar() {
   /* Chão: satélite real, alinhado à malha */
   const textura = new THREE.TextureLoader().load("assets/satelite-ro-3d.jpg", () => {
     pronto.textura = true;
+    sujo = true;
     revela();
   });
   textura.colorSpace = THREE.SRGBColorSpace;
@@ -182,6 +185,7 @@ function iniciar() {
     camera.setViewOffset(W, H, largo ? -W * 0.2 : 0, largo ? 0 : -H * 0.2, W, H);
     camera.fov = largo ? 34 : 46;
     camera.updateProjectionMatrix();
+    sujo = true;
   }
   new ResizeObserver(redimensiona).observe(fixo);
   redimensiona();
@@ -343,7 +347,9 @@ function iniciar() {
 
   /* ---------- Laço de desenho ---------- */
   let visivel = true;
-  new IntersectionObserver((ents) => { visivel = ents[0].isIntersecting; }, { threshold: 0 }).observe(fixo);
+  let ultimaAssinatura = "";
+  // observa a seção inteira (inclui o espaço da rolagem fixa), não só o palco fixado
+  new IntersectionObserver((ents) => { visivel = ents[0].isIntersecting; if (visivel) sujo = true; }, { threshold: 0 }).observe(palco);
 
   const corTmp = new THREE.Color();
   const alvo = new THREE.Vector3();
@@ -399,6 +405,12 @@ function iniciar() {
       rotulo.style.opacity = String(Math.min(1, (e - 0.85) / 0.15));
     }
 
+    // só redesenha quando algo mudou: câmera, mistura de indicadores, crescimento ou destaque
+    const assinatura = camera.position.x.toFixed(4) + camera.position.y.toFixed(4) + camera.position.z.toFixed(4) +
+      est.mix.toFixed(4) + est.cresce.toFixed(4) + (sobre ? sobre.id : "-");
+    if (!sujo && assinatura === ultimaAssinatura) return;
+    ultimaAssinatura = assinatura;
+    sujo = false;
     renderer.render(cena, camera);
   }
   quadro();

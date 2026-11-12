@@ -38,7 +38,7 @@ isso para quem nunca usou um sistema de mapas e leva a pessoa direto ao painel d
 | **Abertura 3D** | Mapa WebGL com os 52 municípios como colunas sobre imagem de satélite real. Zoom de entrada, giro com o mouse, clique abre a ficha do município. Ao rolar, a câmera passa por 3 capítulos: população, PIB (com zoom em Porto Velho) e rebanho bovino. |
 | **Busca** | Campo que encontra o tema certo enquanto você digita ("soja", "hospital", "empregos"…). |
 | **Uma economia que cresce** | Gráfico 3D com colunas por ano e uma seta 3D que sobe pelo topo delas: PIB de RO 2010–2023 ou rebanho 2010–2025. Hover mostra ano, valor e variação. |
-| **Temas** | Os 10 temas com ícones animados, conteúdo de cada painel, fonte e links reais. Filtro com transição animada. |
+| **Temas** | Os 10 temas com ícones animados, conteúdo de cada painel e fonte. "Abrir painel" leva ao painel do tema e "Ver no mapa" abre direto o mapa do tema na IDE. Filtro com transição animada. |
 | **Comece pelo seu município** | Mapa coroplético clicável com ficha: população, densidade, PIB e rebanho, com ranking entre os 52. |
 | **Como usar a IDE** | Três passos ilustrados com animação (o passo 2 usa o mapa real e mostra Ji-Paraná). |
 | **Dados de fontes oficiais** | Faixa com os nomes das fontes em movimento; passar o mouse explica o que cada uma fornece. |
@@ -176,11 +176,16 @@ ffmpeg -i video/ide-mapa-loop.mp4 -an -vf scale=1280:-2 -c:v libx264 -crf 25 -mo
 - **Teclado:** busca com setas, Enter e Esc; seletores de indicador e de série navegáveis por setas; foco visível.
 - **Leitores de tela:** o gráfico 3D tem uma tabela oculta com a série; a lista completa de fontes continua no HTML.
 - **Desempenho:** o gráfico 3D só cria o WebGL quando a seção chega perto da tela; os laços de animação
-  param quando a seção sai da tela; pixel ratio limitado a 2.
+  param quando a seção sai da tela; o mapa 3D só redesenha quando algo muda (câmera, indicador, destaque);
+  os pontos de luz do fluxo ficam numa camada `<canvas>` própria; em telas pequenas ou processadores com
+  até 4 núcleos, resolução e sombras do 3D ficam mais leves.
+- **Compartilhamento:** tags Open Graph com imagem 1200×630 (`site/assets/og-imagem.jpg`) para a prévia
+  no WhatsApp, LinkedIn e outras redes.
 - **Celular:** arrastar o dedo sempre rola a página (o giro do mapa é só com mouse); tocar num município funciona.
 
 Testado com Chrome headless (puppeteer-core) em 1440×900 e 390×844, incluindo hover, arrasto, clique,
-troca de série, filtro e movimento reduzido, sem erros de JavaScript.
+troca de série, filtro e movimento reduzido, sem erros de JavaScript. Os 10 links "Abrir painel" e os 10
+links "Ver no mapa" foram abertos e carregam o conteúdo do tema certo, sem pedir login (12/11/2026).
 
 ---
 

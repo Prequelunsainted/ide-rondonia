@@ -220,13 +220,6 @@
 }
 .cartao3d:hover { box-shadow: 0 4px 8px rgba(19, 34, 45, 0.08), 0 30px 50px -22px rgba(11, 42, 64, 0.45); }
 .cartao3d:hover::after { opacity: 1; }
-.passos__ilus .i-sel, .passos__ilus .i-ponto, .passos__ilus .i-ativo { transform-box: fill-box; transform-origin: 50% 100%; }
-.passos li.visivel .i-sel { animation: ergue 1.1s var(--ease) 0.25s both; }
-.passos li.visivel .i-ponto { animation: pinga 0.9s var(--ease) 0.9s both; }
-.passos li.visivel .i-ativo { animation: acende 0.9s var(--ease) 0.4s both; }
-@keyframes ergue { from { transform: translateY(14px) scale(0.9); opacity: 0; } to { transform: translateY(-3px); opacity: 1; } }
-@keyframes pinga { from { transform: translateY(-18px); opacity: 0; } 60% { opacity: 1; } to { transform: none; opacity: 1; } }
-@keyframes acende { from { transform: scaleX(0.2); opacity: 0.2; } to { transform: none; opacity: 1; } }
 
 /* Mapa do explorador com espessura */
 .mapa svg { filter: drop-shadow(0 1px 0 #c3d3de) drop-shadow(0 2px 0 #b3c6d3) drop-shadow(0 14px 16px rgba(11, 42, 64, 0.16)); }

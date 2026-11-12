@@ -66,5 +66,22 @@ imagem Esri exportada no mesmo enquadramento, e a cena HyperFrames gerada com os
 
 Os 10 temas, as visões e os links dos painéis vieram do `config.json` público do app ArcGIS Experience
 Builder (`https://geo.sedec.ro.gov.br/cdn/1/config.json`): 42 dashboards, 2 visualizadores 3D e 24 mapas web.
+Os botões "Ver no mapa" abrem a visão do mapa de cada tema na própria IDE com o parâmetro `views` do
+Experience Builder (ex.: `https://geo.sedec.ro.gov.br/?views=view_45` para Econômico-social). Os códigos
+ficam no campo `mapa` de cada tema em `site/app.js`:
+
+| Tema | Visão do mapa |
+|---|---|
+| Econômico-social | `view_45` |
+| Comércio exterior | `view_51` |
+| Empresas | `view_66` |
+| Empregos | `view_76` |
+| Agricultura | `view_99` |
+| Pecuária | `view_157` |
+| Áreas protegidas | `view_168` |
+| Recursos minerais | `view_179` |
+| Geoambiental | `view_170` |
+| Saúde | `view_191` |
+
 Os botões "Abrir painel" usam o formato
 `https://geointeligencia.ro.gov.br/portal/apps/experiencebuilder/experience/?id=728e3f3abe054a79bd43b595002a112a&page=<Tema>`.

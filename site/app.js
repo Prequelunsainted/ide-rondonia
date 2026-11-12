@@ -3,6 +3,7 @@
   "use strict";
 
   const IDE = "https://geo.sedec.ro.gov.br/";
+  // "Ver no mapa" abre a visão do mapa do tema na própria IDE (parâmetro views do Experience Builder)
   const PAINEL = (pagina) =>
     "https://geointeligencia.ro.gov.br/portal/apps/experiencebuilder/experience/?id=728e3f3abe054a79bd43b595002a112a&page=" + pagina;
   const reduzMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -32,7 +33,7 @@
   /* ---------- Temas da IDE (do config público do site) ---------- */
   const TEMAS = [
     {
-      id: "economico-social", pagina: "Economico-Social", grupo: "economia", icone: "social",
+      id: "economico-social", mapa: "view_45", pagina: "Economico-Social", grupo: "economia", icone: "social",
       nome: "Econômico-social",
       pergunta: "Como vive e quanto produz cada município?",
       itens: ["População (Censo 2022)", "PIB", "IDH", "Índice FIRJAN", "Índice de Gini", "Poder de compra", "Série histórica"],
@@ -40,7 +41,7 @@
       chaves: "pib renda populacao censo habitantes idh desenvolvimento gini desigualdade poder de compra economia indicadores",
     },
     {
-      id: "comercio-exterior", pagina: "Comercio-Exterior", grupo: "economia", icone: "comex",
+      id: "comercio-exterior", mapa: "view_51", pagina: "Comercio-Exterior", grupo: "economia", icone: "comex",
       nome: "Comércio exterior",
       pergunta: "O que Rondônia vende e compra do resto do mundo?",
       itens: ["Exportação por município", "Importação por município", "Balança comercial", "Comparativo de exportação", "Mapas 3D"],
@@ -48,7 +49,7 @@
       chaves: "exportacao importacao comex balanca comercial soja carne exterior paises vendas economia",
     },
     {
-      id: "empresas", pagina: "Empresas", grupo: "economia", icone: "empresas",
+      id: "empresas", mapa: "view_66", pagina: "Empresas", grupo: "economia", icone: "empresas",
       nome: "Empresas",
       pergunta: "Onde se abrem e onde se fecham empresas?",
       itens: ["Empresas ativas (JUCER)", "Empresas ativas (Governo Federal)", "Abertura e fechamento de empresas"],
@@ -56,7 +57,7 @@
       chaves: "empresa cnpj negocio comercio jucer abertura fechamento mei economia",
     },
     {
-      id: "empregos", pagina: "Empregos", grupo: "economia", icone: "empregos",
+      id: "empregos", mapa: "view_76", pagina: "Empregos", grupo: "economia", icone: "empregos",
       nome: "Empregos",
       pergunta: "Onde há mais admissões, vagas e atendimentos?",
       itens: ["Novo CAGED", "CAGED 2019", "CAGED Região Norte", "Agências do SINE-RO", "PNAD Contínua (RO e Porto Velho)"],
@@ -64,7 +65,7 @@
       chaves: "emprego trabalho vagas carteira caged sine desemprego seguro desemprego admissoes renda economia",
     },
     {
-      id: "agricultura", pagina: "Agricultura", grupo: "rural", icone: "agricultura",
+      id: "agricultura", mapa: "view_99", pagina: "Agricultura", grupo: "rural", icone: "agricultura",
       nome: "Agricultura",
       pergunta: "O que se planta em Rondônia, e onde?",
       itens: ["Produção Agrícola Municipal (PAM)", "Principais produtos", "Produção vegetal por produto", "Aptidão agrícola dos solos"],
@@ -72,7 +73,7 @@
       chaves: "agricultura lavoura soja milho cafe cacau arroz feijao mandioca solo producao rural plantio",
     },
     {
-      id: "pecuaria", pagina: "Pecuaria", grupo: "rural", icone: "pecuaria",
+      id: "pecuaria", mapa: "view_157", pagina: "Pecuaria", grupo: "rural", icone: "pecuaria",
       nome: "Pecuária",
       pergunta: "Onde estão os rebanhos e o que eles produzem?",
       itens: ["Produção da Pecuária Municipal (PPM)", "Produtos de origem animal", "Aquicultura", "Quantidade de rebanhos", "IDARON: GTAs, abate e informe de campo"],
@@ -80,7 +81,7 @@
       chaves: "pecuaria boi gado bovino rebanho leite peixe aquicultura abate frigorifico idaron gta rural",
     },
     {
-      id: "areas-protegidas", pagina: "Areas-Protegidas", grupo: "territorio", icone: "protegidas",
+      id: "areas-protegidas", mapa: "view_168", pagina: "Areas-Protegidas", grupo: "territorio", icone: "protegidas",
       nome: "Áreas protegidas",
       pergunta: "Onde ficam as unidades de conservação, terras indígenas e quilombos?",
       itens: ["Unidades de conservação", "Terras indígenas", "Comunidades quilombolas"],
@@ -88,7 +89,7 @@
       chaves: "areas protegidas unidade de conservacao reserva parque floresta terra indigena indigenas quilombola quilombo ambiente territorio",
     },
     {
-      id: "recursos-minerais", pagina: "Recursos-Minerais", grupo: "territorio", icone: "minerais",
+      id: "recursos-minerais", mapa: "view_179", pagina: "Recursos-Minerais", grupo: "territorio", icone: "minerais",
       nome: "Recursos minerais",
       pergunta: "Onde estão as áreas de recursos minerais?",
       itens: ["Recursos minerais por município", "Consulta de recursos minerais"],
@@ -96,7 +97,7 @@
       chaves: "mineracao minerio garimpo ouro cassiterita estanho recursos minerais territorio",
     },
     {
-      id: "geoambiental", pagina: "Geoambiental", grupo: "territorio", icone: "geoambiental",
+      id: "geoambiental", mapa: "view_170", pagina: "Geoambiental", grupo: "territorio", icone: "geoambiental",
       nome: "Geoambiental",
       pergunta: "Quanta água se usa, e como é o ambiente de cada região?",
       itens: ["Demanda hídrica (vazão de retirada)", "Dados geoambientais", "Bases de informações ambientais"],
@@ -104,7 +105,7 @@
       chaves: "agua rio hidrica vazao ambiente ambiental clima solo relevo geologia territorio",
     },
     {
-      id: "saude", pagina: "Saude", grupo: "social", icone: "saude",
+      id: "saude", mapa: "view_191", pagina: "Saude", grupo: "social", icone: "saude",
       nome: "Saúde",
       pergunta: "Onde estão hospitais, postos e clínicas?",
       itens: ["Estabelecimentos de saúde (CNES)", "Consulta por tipo de unidade"],
@@ -140,7 +141,7 @@
       </div>
       <div class="tema__acoes">
         <a class="botao botao--primario" href="${PAINEL(t.pagina)}" target="_blank" rel="noopener">Abrir painel ${SETA_EXTERNA}<span class="sr"> de ${t.nome} (abre em nova aba)</span></a>
-        <a class="botao botao--secundario" href="${IDE}" target="_blank" rel="noopener">Ver no mapa ${SETA_EXTERNA}<span class="sr"> (abre a IDE em nova aba)</span></a>
+        <a class="botao botao--secundario" href="${IDE}?views=${t.mapa}" target="_blank" rel="noopener">Ver no mapa ${SETA_EXTERNA}<span class="sr"> de ${t.nome} na IDE (abre em nova aba)</span></a>
       </div>
     </li>`).join("");
 
@@ -648,6 +649,12 @@
     const munPaths = mapa ? [...mapa.querySelectorAll("path")] : [];
     let caminhos = [];
     let pontos = [];
+    const tela = document.createElement("canvas");
+    tela.className = "fluxo__pontos";
+    tela.setAttribute("aria-hidden", "true");
+    caixa.insertBefore(tela, svg.nextSibling);
+    const ctx = tela.getContext("2d");
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     function no(sel) { return caixa.querySelector(sel); }
     function ponta(el, lado) {
       const r = el.getBoundingClientRect();
@@ -681,13 +688,22 @@
         d.push(curva(ponta(geode, "dm"), ponta(mp, "em")));
         d.push(curva(ponta(mp, "dm"), ponta(voce, "em")));
       }
-      svg.innerHTML = d.map((p, i) => `<path class="fluxo__linha" d="${p}" data-i="${i}"/>`).join("") +
-        (reduzMovimento ? "" : d.map((_, i) => `<circle class="fluxo__ponto" r="3.4" data-i="${i}"/><circle class="fluxo__ponto fluxo__ponto--2" r="2.4" data-i="${i}"/>`).join(""));
+      svg.innerHTML = d.map((p, i) => `<path class="fluxo__linha" d="${p}" data-i="${i}"/>`).join("");
       caminhos = [...svg.querySelectorAll(".fluxo__linha")];
-      pontos = [...svg.querySelectorAll(".fluxo__ponto")].map((el, j) => ({
-        el, p: caminhos[+el.dataset.i], len: caminhos[+el.dataset.i].getTotalLength(),
-        fase: (j * 0.37) % 1, vel: el.classList.contains("fluxo__ponto--2") ? 0.42 : 0.3,
-      }));
+      // os pontos de luz vão numa camada <canvas> própria: mover círculos SVG a cada quadro
+      // obrigava o navegador a repintar a seção inteira
+      tela.width = Math.round(c.width * dpr);
+      tela.height = Math.round(c.height * dpr);
+      tela.style.width = c.width + "px";
+      tela.style.height = c.height + "px";
+      pontos = [];
+      caminhos.forEach((p, i) => {
+        const len = p.getTotalLength();
+        const amostras = [];
+        for (let k = 0; k <= 160; k++) { const q = p.getPointAtLength((k / 160) * len); amostras.push([q.x, q.y]); }
+        pontos.push({ amostras, fase: (i * 0.37) % 1, vel: 0.3, r: 3.4, cor: "#005b96" });
+        pontos.push({ amostras, fase: (i * 0.37 + 0.5) % 1, vel: 0.42, r: 2.4, cor: "#62a7d6" });
+      });
     }
     desenha();
     window.addEventListener("resize", desenha);
@@ -704,12 +720,16 @@
       if (!visivel) { ultimo = t; return; }
       const dt = Math.min(0.05, (t - ultimo) / 1000);
       ultimo = t;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, tela.width, tela.height);
       pontos.forEach((pt) => {
         pt.fase = (pt.fase + dt * pt.vel) % 1;
-        const q = pt.p.getPointAtLength(pt.fase * pt.len);
-        pt.el.setAttribute("cx", q.x);
-        pt.el.setAttribute("cy", q.y);
-        pt.el.style.opacity = String(Math.min(1, Math.sin(pt.fase * Math.PI) * 1.6));
+        const [x, y] = pt.amostras[Math.round(pt.fase * (pt.amostras.length - 1))];
+        ctx.globalAlpha = Math.min(1, Math.sin(pt.fase * Math.PI) * 1.6);
+        ctx.fillStyle = pt.cor;
+        ctx.beginPath();
+        ctx.arc(x, y, pt.r, 0, Math.PI * 2);
+        ctx.fill();
       });
       acende += dt;
       if (acende > 0.45 && munPaths.length) {

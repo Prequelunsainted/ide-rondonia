@@ -33,6 +33,8 @@ Como `app.js` roda antes dos módulos, a comunicação entre eles é feita por f
 - **Rolagem:** um `ScrollTrigger` fixa o palco por 260% da altura da tela. O progresso (`est.prog`) move a
   câmera entre 4 poses e mistura os indicadores (`est.mix`: 0 população, 1 PIB, 2 rebanho), interpolando
   altura e cor de cada coluna.
+- **Desenho sob demanda:** cada quadro calcula uma "assinatura" (posição da câmera, mistura de indicadores,
+  crescimento, município destacado) e só chama `renderer.render` quando ela muda. Parado, o palco não gasta GPU.
 - **Interação:** arrasto com mouse gira a câmera; `Raycaster` mostra a dica do município; clique chama
   `IDE_seleciona` e rola até o explorador.
 - **Reservas:** sem WebGL → classe `palco--sem3d` e vídeo; movimento reduzido → sem fixar a rolagem,
@@ -61,7 +63,9 @@ Como `app.js` roda antes dos módulos, a comunicação entre eles é feita por f
   O passo 2 desenha a malha real e destaca Ji-Paraná.
 - **Faixa de fontes:** hover/toque mostra a descrição em `#fita-info`.
 - **Fluxo "Do dado ao mapa":** linhas SVG calculadas a partir da posição dos cartões (horizontal no
-  desktop, vertical no celular), pontos de luz via `getPointAtLength` e municípios que acendem.
+  desktop, vertical no celular). Os pontos de luz são desenhados num `<canvas>` próprio a partir de 160
+  amostras pré-calculadas de cada linha (mover círculos SVG a cada quadro repintava a seção inteira).
+  Municípios do mini mapa acendem em sequência.
 - **Trilho de rolagem:** barra fixa na margem direita; remede a página quando a altura muda (a área
   fixa do 3D aumenta a página depois do carregamento); pista clicável e arrastável.
 - **Animações de apoio** (só sem movimento reduzido): títulos que sobem girando, listas em sequência,

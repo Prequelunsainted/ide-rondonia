@@ -94,7 +94,9 @@
   background: linear-gradient(180deg, #005b96 0%, #2f87c9 25%, #9fd0ff 50%, #2f87c9 75%, #005b96 100%);
   background-size: 100% 220px;
   animation: trilho-fluxo 2.4s linear infinite;
+  animation-play-state: paused;
 }
+.trilho.rolando .trilho__cheio, .trilho:hover .trilho__cheio, .trilho.arrastando .trilho__cheio { animation-play-state: running; }
 @keyframes trilho-fluxo { to { background-position: 0 220px; } }
 .trilho__cabeca {
   position: absolute; left: 50%; top: 0; width: 14px; height: 14px; margin: -7px 0 0 -7px;
@@ -324,10 +326,9 @@
   padding-block: 12px;
 }
 .fluxo__linhas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
-.fluxo__diagrama > :not(svg) { position: relative; z-index: 1; }
+.fluxo__diagrama > :not(svg):not(canvas) { position: relative; z-index: 1; }
 .fluxo__linha { fill: none; stroke: #b9d2e5; stroke-width: 1.6; stroke-dasharray: 4 5; }
-.fluxo__ponto { fill: var(--azul); }
-.fluxo__ponto--2 { fill: #62a7d6; }
+.fluxo__pontos { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 0; will-change: transform; }
 .fluxo__fontes { display: grid; gap: 10px; justify-items: start; margin: 0; padding: 0; list-style: none; }
 .fluxo__fontes li {
   padding: 8px 14px; border-radius: 999px;
